@@ -21,7 +21,7 @@ combinedSample <- rbind(trainSample,testSample)
 
 #### Task 2. Extract only the measurements on the mean and standard deviation for each measurement
 
-## Tidy up "features": remove brackets, commas and hyphens only for those considered
+## Tidy up "features": remove brackets, commas and hyphens 
 features_tidy <- features
 features_tidy$V2 <- gsub("\\-", "_", features_tidy$V2)
 features_tidy$V2 <- gsub("\\,", "_", features_tidy$V2)

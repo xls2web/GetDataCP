@@ -61,70 +61,111 @@ img {
 
 
 
-<div id="coursera---getting-and-cleaning-data---course-project" class="section level1">
-<h1>Coursera - Getting and Cleaning Data - Course Project</h1>
-<div id="data-capturing-process" class="section level2">
-<h2>Data capturing process</h2>
-<p>The experiments have been carried out with a group of 30 volunteers within an age bracket of 19-48 years. Each person performed six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. Using its embedded accelerometer and gyroscope, researchers captured 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz. The experiments have been video-recorded to label the data manually. The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data.</p>
-<p>The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows of 2.56 sec and 50% overlap (128 readings/window). The sensor acceleration signal, which has gravitational and body motion components, was separated using a Butterworth low-pass filter into body acceleration and gravity. The gravitational force is assumed to have only low frequency components, therefore a filter with 0.3 Hz cutoff frequency was used. From each window, a vector of features was obtained by calculating variables from the time and frequency domain. See ‘features_info.txt’ for more details.</p>
+<div id="data-capture-process" class="section level2">
+<h2>Data capture process</h2>
+<p>The features selected for this database come from the accelerometer and gyroscope 3-axial raw signals tAcc-XYZ and tGyro-XYZ. These time domain signals (prefix ‘t’ to denote time) were captured at a constant rate of 50 Hz. Then they were filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise. Similarly, the acceleration signal was then separated into body and gravity acceleration signals (tBodyAcc-XYZ and tGravityAcc-XYZ) using another low pass Butterworth filter with a corner frequency of 0.3 Hz.</p>
+<p>Subsequently, the body linear acceleration and angular velocity were derived in time to obtain Jerk signals (tBodyAccJerk-XYZ and tBodyGyroJerk-XYZ). Also the magnitude of these three-dimensional signals were calculated using the Euclidean norm (tBodyAccMag, tGravityAccMag, tBodyAccJerkMag, tBodyGyroMag, tBodyGyroJerkMag).</p>
+<p>Finally a Fast Fourier Transform (FFT) was applied to some of these signals producing fBodyAcc-XYZ, fBodyAccJerk-XYZ, fBodyGyro-XYZ, fBodyAccJerkMag, fBodyGyroMag, fBodyGyroJerkMag. (Note the ‘f’ to indicate frequency domain signals).</p>
+<p>These signals were used to estimate variables of the feature vector for each pattern:<br />‘-XYZ’ is used to denote 3-axial signals in the X, Y and Z directions.</p>
+<ul>
+<li>tBodyAcc_XYZ</li>
+<li>tGravityAcc_XYZ</li>
+<li>tBodyAccJerk_XYZ</li>
+<li>tBodyGyro_XYZ</li>
+<li>tBodyGyroJerk_XYZ</li>
+<li>tBodyAccMag</li>
+<li>tGravityAccMag</li>
+<li>tBodyAccJerkMag</li>
+<li>tBodyGyroMag</li>
+<li>tBodyGyroJerkMag</li>
+<li>fBodyAcc_XYZ</li>
+<li>fBodyAccJerk_XYZ</li>
+<li>fBodyGyro_XYZ</li>
+<li>fBodyAccMag</li>
+<li>fBodyAccJerkMag</li>
+<li>fBodyGyroMag</li>
+<li>fBodyGyroJerkMag</li>
+</ul>
+<p>The set of variables that were estimated from these signals included:</p>
+<ul>
+<li><em>mean</em>: Mean value</li>
+<li><em>std</em>: Standard deviation</li>
+</ul>
 </div>
-<div id="purpose-of-the-script" class="section level2">
-<h2>Purpose of the script</h2>
-<p><code>run_analysis.R</code> tidies up and aggregates the data collected from the accelerometers from the Samsung Galaxy S smartphone</p>
-</div>
-<div id="packages" class="section level2">
-<h2>Packages</h2>
-<p>Make sure package plyr is installed</p>
-</div>
-<div id="how-to-use" class="section level2">
-<h2>How to use</h2>
-<ol style="list-style-type: decimal">
-<li>Clone this repository into your R working directory</li>
-<li>Upload data set from <a href="https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip">Data Set</a> to SourceData folder and unzip</li>
-<li>Run script <code>run_analysis.R</code></li>
-</ol>
-</div>
-<div id="how-it-works" class="section level2">
-<h2>How it works</h2>
-<ol style="list-style-type: decimal">
-<li><p>Reads raw data from the files</p>
-<pre class="{r}"><code>x_train &lt;- read.table(&quot;SourceData/UCI HAR Dataset/train/X_train.txt&quot;)
-x_test &lt;- read.table(&quot;SourceData/UCI HAR Dataset/test/X_test.txt&quot;)
-y_train &lt;- read.table(&quot;SourceData/UCI HAR Dataset/train/y_train.txt&quot;)
-y_test &lt;- read.table(&quot;SourceData/UCI HAR Dataset/test/y_test.txt&quot;)
-subject_train&lt;-read.table(&quot;SourceData/UCI HAR Dataset/train/subject_train.txt&quot;)
-subject_test&lt;-read.table(&quot;SourceData/UCI HAR Dataset/test/subject_test.txt&quot;)
-features&lt;-read.table(&quot;SourceData/UCI HAR Dataset/features.txt&quot;)
-labels&lt;-read.table(&quot;SourceData/UCI HAR Dataset/activity_labels.txt&quot;)</code></pre></li>
-<li><p>Binds activity subjects and activity labels to train and test data sets</p>
-<pre class="{r}"><code>trainSample&lt;-cbind(x_train, subject_train, y_train)
-testSample&lt;-cbind(x_test, subject_test, y_test)</code></pre></li>
-<li><p>Unions train and test data sets into one</p>
-<pre class="{r}"><code>combinedSample &lt;- rbind(trainSample,testSample)</code></pre></li>
-<li><p>Removes brackets, commas and hyphens from column names and assigns column names to <code>combinedSample</code> data frame. Measurements on the mean and standard deviation will have specific patterns in the column names such as <code>.mean</code> and <code>.std</code></p>
-<pre class="{r}"><code>features_tidy &lt;- features
-features_tidy$V2 &lt;- gsub(&quot;\\-&quot;, &quot;_&quot;, features_tidy$V2)
-features_tidy$V2 &lt;- gsub(&quot;\\,&quot;, &quot;_&quot;, features_tidy$V2)
-features_tidy$V2 &lt;- gsub(&quot;mean\\(\\)&quot;, &quot;.mean&quot;, features_tidy$V2)
-features_tidy$V2 &lt;- gsub(&quot;std\\(\\)&quot;, &quot;.std&quot;, features_tidy$V2)
-features_tidy$V2 &lt;- gsub(&quot;\\(\\)&quot;, &quot;_&quot;, features_tidy$V2)
-features_tidy$V2 &lt;- gsub(&quot;\\(&quot;, &quot;.&quot;, features_tidy$V2)
-features_tidy$V2 &lt;- gsub(&quot;\\)&quot;, &quot;.&quot;, features_tidy$V2)
-names(combinedSample)&lt;-c(features_tidy$V2, &quot;subject&quot;, &quot;label&quot;)</code></pre></li>
-<li><p>Adds descriptive activity names to data set</p>
-<pre class="{r}"><code>names(labels)&lt;-c(&quot;label&quot;, &quot;descr&quot;)
-combinedSample_scoped&lt;-merge(combinedSample_scoped,labels, by=&quot;label&quot;)</code></pre></li>
-<li><p>Creates a second, independent tidy data set with the average of each variable for each activity and each subject.</p>
-<pre class="{r}"><code>library(plyr)
-res&lt;-ddply(combinedSample_scoped, .(label, descr, subject), colwise(mean))</code></pre></li>
-<li><p>Saves the result in file <code>result.txt</code></p>
-<pre class="{r}"><code>write.table(res, &quot;result.txt&quot;)</code></pre></li>
-</ol>
-</div>
-<div id="result" class="section level2">
-<h2>Result</h2>
-<p>Average values of all mean and standard deviation measurements by subject and activity. Refer to <a href="https://github.com/xls2web/GetDataCP/blob/master/CodeBook.md">codebook.md</a> for further details.</p>
-</div>
+<div id="data-fields-description" class="section level2">
+<h2>Data fields description</h2>
+<p>The <code>result.txt</code> data set contains average values of all mean and standard deviation measurements by subject and activity.</p>
+<ul>
+<li><code>label</code> - a code of an activity - a number from one to 6</li>
+<li><code>descr</code> - a desrcription of the activity - either of LAYING, SITTING, STANDING, WALKING, WALKING_DOWNSTAIRS, WALKING_UPSTAIRS</li>
+<li><code>subject</code> - a number from 1 to 30 identifying a subject from whom measurements were taken</li>
+<li><code>tBodyAcc_.mean_X</code> - average mean value of time domain signal of BodyAcc, X-dimension</li>
+<li><code>tBodyAcc_.mean_Y</code> - average mean value of time domain signal of BodyAcc, Y-dimension</li>
+<li><code>tBodyAcc_.mean_Z</code> - average mean value of time domain signal of BodyAcc, Z-dimension</li>
+<li><code>tBodyAcc_.std_X</code> - average standard deviation of time domain signal of BodyAcc, X-dimension</li>
+<li><code>tBodyAcc_.std_Y</code> - average standard deviation of time domain signal of BodyAcc, Y-dimension</li>
+<li><code>tBodyAcc_.std_Z</code> - average standard deviation of time domain signal of BodyAcc, Z-dimension</li>
+<li><code>tGravityAcc_.mean_X</code> - average mean value of time domain signal of GravityAcc, X-dimension</li>
+<li><code>tGravityAcc_.mean_Y</code> - average mean value of time domain signal of GravityAcc, Y-dimension</li>
+<li><code>tGravityAcc_.mean_Z</code> - average mean value of time domain signal of GravityAcc, Z-dimension</li>
+<li><code>tGravityAcc_.std_X</code> - average standard deviation of time domain signal of GravityAcc, X-dimension</li>
+<li><code>tGravityAcc_.std_Y</code> - average standard deviation of time domain signal of GravityAcc, Y-dimension</li>
+<li><code>tGravityAcc_.std_Z</code> - average standard deviation of time domain signal of GravityAcc, Z-dimension</li>
+<li><code>tBodyAccJerk_.mean_X</code> - average mean value of time domain signal of BodyAccJerk, X-dimension</li>
+<li><code>tBodyAccJerk_.mean_Y</code> - average mean value of time domain signal of BodyAccJerk, Y-dimension</li>
+<li><code>tBodyAccJerk_.mean_Z</code> - average mean value of time domain signal of BodyAccJerk, Z-dimension</li>
+<li><code>tBodyAccJerk_.std_X</code> - average standard deviation of time domain signal of BodyAccJerk, X-dimension</li>
+<li><code>tBodyAccJerk_.std_Y</code> - average standard deviation of time domain signal of BodyAccJerk, Y-dimension</li>
+<li><code>tBodyAccJerk_.std_Z</code> - average standard deviation of time domain signal of BodyAccJerk, Z-dimension</li>
+<li><code>tBodyGyro_.mean_X</code> - average mean value of time domain signal of BodyGyro, X-dimension</li>
+<li><code>tBodyGyro_.mean_Y</code> - average mean value of time domain signal of BodyGyro, Y-dimension</li>
+<li><code>tBodyGyro_.mean_Z</code> - average mean value of time domain signal of BodyGyro, Z-dimension</li>
+<li><code>tBodyGyro_.std_X</code> - average standard deviation of time domain signal of BodyGyro, X-dimension</li>
+<li><code>tBodyGyro_.std_Y</code> - average standard deviation of time domain signal of BodyGyro, Y-dimension</li>
+<li><code>tBodyGyro_.std_Z</code> - average standard deviation of time domain signal of BodyGyro, Z-dimension</li>
+<li><code>tBodyGyroJerk_.mean_X</code> - average mean value of time domain signal of BodyGyroJerk, X-dimension</li>
+<li><code>tBodyGyroJerk_.mean_Y</code> - average mean value of time domain signal of BodyGyroJerk, Y-dimension</li>
+<li><code>tBodyGyroJerk_.mean_Z</code> - average mean value of time domain signal of BodyGyroJerk, Z-dimension</li>
+<li><code>tBodyGyroJerk_.std_X</code> - average standard deviation of time domain signal of BodyGyroJerk, X-dimension</li>
+<li><code>tBodyGyroJerk_.std_Y</code> - average standard deviation of time domain signal of BodyGyroJerk, Y-dimension</li>
+<li><code>tBodyGyroJerk_.std_Z</code> - average standard deviation of time domain signal of BodyGyroJerk, Z-dimension</li>
+<li><code>tBodyAccMag_.mean</code> - average value of time domain signal of BodyAccMag</li>
+<li><code>tBodyAccMag_.std</code> - standard deviation of time domain signal of BodyAccMag</li>
+<li><code>tGravityAccMag_.mean</code> - average value of time domain signal of GravityAccMag</li>
+<li><code>tGravityAccMag_.std</code> - standard deviation of time domain signal of GravityAccMag</li>
+<li><code>tBodyAccJerkMag_.mean</code> - average value of time domain signal of BodyAccJerkMag</li>
+<li><code>tBodyAccJerkMag_.std</code> - standard deviation of time domain signal of BodyAccJerkMag</li>
+<li><code>tBodyGyroMag_.mean</code> - average value of time domain signal of BodyGyroMag</li>
+<li><code>tBodyGyroMag_.std</code> - standard deviation of time domain signal of BodyGyroMag</li>
+<li><code>tBodyGyroJerkMag_.mean</code> - average value of time domain signal of BodyGyroJerkMag</li>
+<li><code>tBodyGyroJerkMag_.std</code> - standard deviation of time domain signal of BodyGyroJerkMag</li>
+<li><code>fBodyAcc_.mean_X</code> - average mean of fast fourier transform, BodyAcc, X-dimension</li>
+<li><code>fBodyAcc_.mean_Y</code> - average mean of fast fourier transform, BodyAcc, Y-dimension</li>
+<li><code>fBodyAcc_.mean_Z</code> - average mean of fast fourier transform, BodyAcc, Z-dimension</li>
+<li><code>fBodyAcc_.std_X</code> - average standard deviation of fast fourier transform, BodyAcc, X-dimension</li>
+<li><code>fBodyAcc_.std_Y</code> - average standard deviation of fast fourier transform, BodyAcc, Y-dimension</li>
+<li><code>fBodyAcc_.std_Z</code> - average standard deviation of fast fourier transform, BodyAcc, Z-dimension</li>
+<li><code>fBodyAccJerk_.mean_X</code> - average mean of fast fourier transform, BodyAccJerk, X-dimension</li>
+<li><code>fBodyAccJerk_.mean_Y</code> - average mean of fast fourier transform, BodyAccJerk, Y-dimension</li>
+<li><code>fBodyAccJerk_.mean_Z</code> - average mean of fast fourier transform, BodyAccJerk, Z-dimension</li>
+<li><code>fBodyAccJerk_.std_X</code> - average standard deviation of fast fourier transform, BodyAccJerk, X-dimension</li>
+<li><code>fBodyAccJerk_.std_Y</code> - average standard deviation of fast fourier transform, BodyAccJerk, Y-dimension</li>
+<li><code>fBodyAccJerk_.std_Z</code> - average standard deviation of fast fourier transform, BodyAccJerk, Z-dimension</li>
+<li><code>fBodyGyro_.mean_X</code> - average mean of fast fourier transform, BodyGyro, X-dimension</li>
+<li><code>fBodyGyro_.mean_Y</code> - average mean of fast fourier transform, BodyGyro, Y-dimension</li>
+<li><code>fBodyGyro_.mean_Z</code> - average mean of fast fourier transform, BodyGyro, Z-dimension</li>
+<li><code>fBodyGyro_.std_X</code> - average standard deviation of fast fourier transform, BodyGyro, X-dimension</li>
+<li><code>fBodyGyro_.std_Y</code> - average standard deviation of fast fourier transform, BodyGyro, Y-dimension</li>
+<li><code>fBodyGyro_.std_Z</code> - average standard deviation of fast fourier transform, BodyGyro, Z-dimension</li>
+<li><code>fBodyAccMag_.mean</code> - average mean of fast fourier transform, BodyAccMag</li>
+<li><code>fBodyAccMag_.std</code> - average standard deviation of fast fourier transform, BodyAccMag</li>
+<li><code>fBodyBodyAccJerkMag_.mean</code> - average mean of fast fourier transform, BodyBodyAccJerkMag</li>
+<li><code>fBodyBodyAccJerkMag_.std</code> - average standard deviation of fast fourier transform, BodyBodyAccJerkMag</li>
+<li><code>fBodyBodyGyroMag_.mean</code> - average mean of fast fourier transform, BodyBodyGyroMag</li>
+<li><code>fBodyBodyGyroMag_.std</code> - average standard deviation of fast fourier transform, BodyBodyGyroMag</li>
+<li><code>fBodyBodyGyroJerkMag_.mean</code> - average mean of fast fourier transform, BodyBodyGyroJerkMag</li>
+<li><code>fBodyBodyGyroJerkMag_.std</code> - average standard deviation of fast fourier transform, BodyBodyGyroJerkMag</li>
+</ul>
 </div>
 
 
