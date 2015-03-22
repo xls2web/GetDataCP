@@ -65,4 +65,4 @@ write.table(res, "result.txt")
 
 
 ## Result
-Average values of  all mean and standard deviation measurements by subject and activity. Refer to [codebook.md](https://github.com/xls2web/GetDataCP/blob/master/CodeBook.md) for further details. 
+Average values of  all mean and standard deviation measurements by subject and activity. Refer to [codebook.md](https://github.com/xls2web/GetDataCP/blob/master/codebook.md) for further details. 
